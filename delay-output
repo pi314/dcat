@@ -4,24 +4,38 @@ import time
 
 PYTHON_VERSION = sys.version_info[0]
 
-if len(sys.argv) == 1:
-    delay = 1
+per_byte = False
+delay = 1
 
-else:
-    delay = float(sys.argv[1])
+for arg in sys.argv[1:]:
+    if arg in ('-b', '-c', '--per-char', '--per-byte'):
+        per_byte = True
+    else:
+        delay = float(arg)
 
 try:
     while True:
         if PYTHON_VERSION == 3:
-            s = sys.stdin.buffer.raw.readline()
+            if per_byte:
+                s = sys.stdin.buffer.raw.read(1)
+            else:
+                s = sys.stdin.buffer.raw.readline()
+
             if len(s) == 0:
                 break
             sys.stdout.buffer.raw.write(s)
+            sys.stdout.flush()
+
         else:
-            s = sys.stdin.readline()
+            if per_byte:
+                s = sys.stdin.read(1)
+            else:
+                s = sys.stdin.readline()
+
             if len(s) == 0:
                 break
             sys.stdout.write(s)
+            sys.stdout.flush()
 
         time.sleep(delay)
 
