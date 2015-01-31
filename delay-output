@@ -4,20 +4,30 @@ import time
 
 PYTHON_VERSION = sys.version_info[0]
 
-per_byte = False
+per_byte = 0
 delay = 1
 
-for arg in sys.argv[1:]:
+args = sys.argv[1:]
+
+while len(args) > 0:
+    ''' shell-script-style argument parse
+    '''
+    arg = args[0]
     if arg in ('-b', '-c', '--per-char', '--per-byte'):
-        per_byte = True
+        args = args[1:]
+        arg = args[0]
+        per_byte = int(arg)
+
     else:
         delay = float(arg)
+
+    args = args[1:]
 
 try:
     while True:
         if PYTHON_VERSION == 3:
-            if per_byte:
-                s = sys.stdin.buffer.raw.read(1)
+            if per_byte != 0:
+                s = sys.stdin.buffer.raw.read(per_byte)
             else:
                 s = sys.stdin.buffer.raw.readline()
 
@@ -27,8 +37,8 @@ try:
             sys.stdout.flush()
 
         else:
-            if per_byte:
-                s = sys.stdin.read(1)
+            if per_byte != 0:
+                s = sys.stdin.read(per_byte)
             else:
                 s = sys.stdin.readline()
 
