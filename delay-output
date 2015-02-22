@@ -1,33 +1,25 @@
 #!/usr/bin/env python
 import sys
 import time
+import argparse
 
 PYTHON_VERSION = sys.version_info[0]
 
-per_byte = 0
-delay = 1
+parser = argparse.ArgumentParser(description='A tiny tool that takes stdin, and output to stdout line by line with delay.')
+parser.add_argument('delay', nargs='?', type=float, default=1, help='Print by bytes instead of lines')
+parser.add_argument('-b', '-c', '--per-byte', '--per-char',
+                    type=int, default=0,
+                    dest='per_byte',
+                    metavar='bytes',
+                    help='Print by bytes instead of lines')
 
-args = sys.argv[1:]
-
-while len(args) > 0:
-    ''' shell-script-style argument parse
-    '''
-    arg = args[0]
-    if arg in ('-b', '-c', '--per-char', '--per-byte'):
-        args = args[1:]
-        arg = args[0]
-        per_byte = int(arg)
-
-    else:
-        delay = float(arg)
-
-    args = args[1:]
+args = parser.parse_args()
 
 try:
     while True:
         if PYTHON_VERSION == 3:
-            if per_byte != 0:
-                s = sys.stdin.buffer.raw.read(per_byte)
+            if args.per_byte != 0:
+                s = sys.stdin.buffer.raw.read(args.per_byte)
             else:
                 s = sys.stdin.buffer.raw.readline()
 
@@ -37,8 +29,8 @@ try:
             sys.stdout.flush()
 
         else:
-            if per_byte != 0:
-                s = sys.stdin.read(per_byte)
+            if args.per_byte != 0:
+                s = sys.stdin.read(args.per_byte)
             else:
                 s = sys.stdin.readline()
 
@@ -47,7 +39,7 @@ try:
             sys.stdout.write(s)
             sys.stdout.flush()
 
-        time.sleep(delay)
+        time.sleep(args.delay)
 
 except EOFError:
     pass
