@@ -1,6 +1,6 @@
-==============
-Delayed output
-==============
+===========
+Delayed cat
+===========
 
 A tiny tool that takes stdin, and output to stdout line by line with delay.
 
