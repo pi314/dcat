@@ -5,8 +5,9 @@ import argparse
 
 PYTHON_VERSION = sys.version_info[0]
 
-parser = argparse.ArgumentParser(description='A tiny tool that takes stdin, and output to stdout line by line with delay.')
-parser.add_argument('delay', nargs='?', type=float, default=1, help='Print by bytes instead of lines')
+parser = argparse.ArgumentParser(description='A tiny tool that takes stdin (or file), and output to stdout line by line with delay.')
+parser.add_argument('infile', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
+parser.add_argument('-d', type=float, default=1, dest='delay', help='Print by bytes instead of lines')
 parser.add_argument('-b', '-c', '--per-byte', '--per-char',
                     type=int, default=0,
                     dest='per_byte',
@@ -19,9 +20,9 @@ try:
     while True:
         if PYTHON_VERSION == 3:
             if args.per_byte != 0:
-                s = sys.stdin.buffer.raw.read(args.per_byte)
+                s = args.infile.buffer.raw.read(args.per_byte)
             else:
-                s = sys.stdin.buffer.raw.readline()
+                s = args.infile.buffer.raw.readline()
 
             if len(s) == 0:
                 break
@@ -30,9 +31,9 @@ try:
 
         else:
             if args.per_byte != 0:
-                s = sys.stdin.read(args.per_byte)
+                s = args.infile.read(args.per_byte)
             else:
-                s = sys.stdin.readline()
+                s = args.infile.readline()
 
             if len(s) == 0:
                 break
